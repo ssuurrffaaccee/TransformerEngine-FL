@@ -29,7 +29,7 @@ class KunLunXinBackend(TEFLBackendBase):
 
     def get_attention_backend(self, attention_params=None):
         from packaging.version import Version as PkgVersion
-        from ...logger_manager import get_logger
+        from transformer_engine.plugin.core.logger_manager import get_logger
         logger = get_logger()
 
         # Read environment variables to determine which backends to enable

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import functools
 
-from ...types import OpImpl, BackendImplKind
+from transformer_engine.plugin.core.types import OpImpl, BackendImplKind
 
 
 def _bind_is_available(fn, is_available_fn):
