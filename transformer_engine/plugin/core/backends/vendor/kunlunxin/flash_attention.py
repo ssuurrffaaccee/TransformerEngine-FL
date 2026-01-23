@@ -285,25 +285,27 @@ class FlashAttentionTorch(FlashAttentionBase):
             attn_mask.masked_fill_(padding_broadcast, float('-inf'))
 
         if attn_mask_type == "causal":
-            if window_size is None and not use_packed_format:
-                is_causal = True
-            else:
-                causal_mask = torch.zeros(
-                    seq_len_q, seq_len_kv,
-                    dtype=query.dtype, device=query.device
-                )
-                causal_mask.masked_fill_(
-                    torch.triu(torch.ones(seq_len_q, seq_len_kv, device=query.device, dtype=torch.bool), diagonal=1),
-                    float('-inf')
-                )
+            is_causal = True
+            attn_mask = None
+            # if window_size is None and not use_packed_format:
+            #     is_causal = True
+            # else:
+            #     causal_mask = torch.zeros(
+            #         seq_len_q, seq_len_kv,
+            #         dtype=query.dtype, device=query.device
+            #     )
+            #     causal_mask.masked_fill_(
+            #         torch.triu(torch.ones(seq_len_q, seq_len_kv, device=query.device, dtype=torch.bool), diagonal=1),
+            #         float('-inf')
+            #     )
 
-                if attn_mask is not None:
-                    if attn_mask.dim() == 2:
-                        attn_mask = attn_mask + causal_mask
-                    else:
-                        attn_mask = attn_mask + causal_mask.unsqueeze(0)
-                else:
-                    attn_mask = causal_mask
+            #     if attn_mask is not None:
+            #         if attn_mask.dim() == 2:
+            #             attn_mask = attn_mask + causal_mask
+            #         else:
+            #             attn_mask = attn_mask + causal_mask.unsqueeze(0)
+            #     else:
+            #         attn_mask = causal_mask
 
         if window_size is not None and not is_causal:
             window_mask = self._create_sliding_window_mask(

@@ -3,7 +3,7 @@
 # See LICENSE for license information.
 
 """
-Reference backend operator registrations.
+KunLunXin backend operator registrations.
 
 This module registers all KunLunXin PyTorch implementations.
 """
