@@ -9,6 +9,11 @@ import torch
 
 from ...ops import TEFLBackendBase, FP8TensorMeta, NVTE_Fused_Attn_Backend
 
+from .impl import (
+    general_gemm_torch,
+    rmsnorm_fwd_torch, rmsnorm_bwd_torch,
+    multi_tensor_adam_torch
+)
 
 class KunLunXinBackend(TEFLBackendBase):
     @staticmethod
@@ -79,7 +84,30 @@ class KunLunXinBackend(TEFLBackendBase):
         alpha: float = 1.0,
         beta: Optional[float] = None,
     ) -> Any:
-        raise NotImplementedError("generic_gemm - not implemented in reference backend")
+        return general_gemm_torch(
+            A=A,
+            transA=transA,
+            B=B,
+            transB=transB,
+            D=D,
+            quantizer=quantizer,
+            output_dtype=output_dtype,
+            bias=bias,
+            bias_type=bias_type,
+            gelu=gelu,
+            gelu_in=gelu_in,
+            grad=grad,
+            workspace=workspace,
+            workspace_size=workspace_size,
+            accumulate=accumulate,
+            use_split_accumulator=use_split_accumulator,
+            comm_overlap=comm_overlap,
+            comm_type=comm_type,
+            extra_output=extra_output,
+            bulk_overlap=bulk_overlap,
+            alpha=alpha,
+            beta=beta,
+        )
 
     def te_general_grouped_gemm(self, *args, **kwargs) -> Any:
         raise NotImplementedError("te_general_grouped_gemm - not implemented in reference backend")
@@ -106,7 +134,7 @@ class KunLunXinBackend(TEFLBackendBase):
         raise NotImplementedError("qgeglu - not implemented in reference backend")
 
     def relu(self, input: torch.Tensor, quantizer: Any) -> Any:
-        raise NotImplementedError("relu - not implemented in reference backend") 
+        raise NotImplementedError("relu - not implemented in reference backend")
 
     def reglu(self, input: torch.Tensor, quantizer: Any) -> Any:
         raise NotImplementedError("reglu - not implemented in reference backend")
@@ -154,7 +182,7 @@ class KunLunXinBackend(TEFLBackendBase):
         raise NotImplementedError("dsilu - not implemented in reference backend")
 
     def dswiglu(self, grad: torch.Tensor, fwd_input: torch.Tensor, quantizer: Any) -> Any:
-        raise NotImplementedError("dsilu - not implemented in reference backend")
+        raise NotImplementedError("dswiglu - not implemented in reference backend")
 
     def clamped_dswiglu(self, grad: torch.Tensor, fwd_input: torch.Tensor, quantizer: Any, limit: float = 7.0, alpha: float = 1.702) -> Any:
         raise NotImplementedError("clamped_dswiglu - not implemented in reference backend")
@@ -211,7 +239,16 @@ class KunLunXinBackend(TEFLBackendBase):
         sm_margin: int,
         zero_centered_gamma: bool,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], torch.Tensor]:
-        raise NotImplementedError("rmsnorm_fwd - not implemented in reference backend")
+        return rmsnorm_fwd_torch(
+            input=input,
+            weight=weight,
+            eps=eps,
+            ln_out=ln_out,
+            quantizer=quantizer,
+            odtype=otype,
+            sm_margin=sm_margin,
+            zero_centered_gamma=zero_centered_gamma,
+        )
 
     def rmsnorm_bwd(
         self,
@@ -223,7 +260,15 @@ class KunLunXinBackend(TEFLBackendBase):
         zero_centered_gamma: bool = False,
         eps: float = 1e-5,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        raise NotImplementedError("rmsnorm_bwd - not implemented in reference backend")
+        return rmsnorm_bwd_torch(
+            dy=dy,
+            x=x,
+            rsigma=rsigma,
+            gamma=gamma,
+            sm_margin=sm_margin,
+            zero_centered_gamma=zero_centered_gamma,
+            eps=eps,
+        )
 
     def rmsnorm_bwd_add(self, *args, **kwargs) -> Any:
         raise NotImplementedError("rmsnorm_bwd_add - not implemented in reference backend")
@@ -406,7 +451,9 @@ class KunLunXinBackend(TEFLBackendBase):
         raise NotImplementedError("multi_tensor_unscale_l2norm - not implemented in reference backend")
 
     def multi_tensor_adam(self, *args, **kwargs):
-        raise NotImplementedError("multi_tensor_adam - not implemented in reference backend")
+        if not args and not kwargs:
+            return multi_tensor_adam_torch
+        return multi_tensor_adam_torch(*args, **kwargs)
 
     def multi_tensor_adam_param_remainder(self, *args, **kwargs) -> None:
         raise NotImplementedError("multi_tensor_adam_param_remainder - not implemented in reference backend")

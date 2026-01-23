@@ -2,6 +2,6 @@
 #
 # See LICENSE for license information.
 
-from .reference import KunLunXinBackend
+from .kunlunxin import KunLunXinBackend
 
 __all__ = ["KunLunXinBackend"]
