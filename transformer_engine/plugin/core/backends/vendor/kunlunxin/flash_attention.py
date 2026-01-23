@@ -8,7 +8,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import torch
 import torch.nn.functional as F
 
-from transformer_engine.plugin.core.ops import FlashAttentionBase
+from .ops import FlashAttentionBase
 
 
 class FlashAttentionTorch(FlashAttentionBase):

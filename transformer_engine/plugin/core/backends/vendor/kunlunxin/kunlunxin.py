@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 
-from ...ops import TEFLBackendBase, FP8TensorMeta, NVTE_Fused_Attn_Backend
+from .ops import TEFLBackendBase, FP8TensorMeta, NVTE_Fused_Attn_Backend
 
 from .impl import (
     general_gemm_torch,
