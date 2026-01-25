@@ -9,11 +9,6 @@ import torch
 
 from transformer_engine.plugin.core.ops import TEFLBackendBase, FP8TensorMeta, NVTE_Fused_Attn_Backend
 
-from .impl import (
-    general_gemm_torch,
-    rmsnorm_fwd_torch, rmsnorm_bwd_torch,
-    multi_tensor_adam_torch
-)
 
 class KunLunXinBackend(TEFLBackendBase):
     @staticmethod
@@ -84,30 +79,7 @@ class KunLunXinBackend(TEFLBackendBase):
         alpha: float = 1.0,
         beta: Optional[float] = None,
     ) -> Any:
-        return general_gemm_torch(
-            A=A,
-            transA=transA,
-            B=B,
-            transB=transB,
-            D=D,
-            quantizer=quantizer,
-            output_dtype=output_dtype,
-            bias=bias,
-            bias_type=bias_type,
-            gelu=gelu,
-            gelu_in=gelu_in,
-            grad=grad,
-            workspace=workspace,
-            workspace_size=workspace_size,
-            accumulate=accumulate,
-            use_split_accumulator=use_split_accumulator,
-            comm_overlap=comm_overlap,
-            comm_type=comm_type,
-            extra_output=extra_output,
-            bulk_overlap=bulk_overlap,
-            alpha=alpha,
-            beta=beta,
-        )
+        raise NotImplementedError("generic_gemm - not implemented in kunlunxin backend")
 
     def te_general_grouped_gemm(self, *args, **kwargs) -> Any:
         raise NotImplementedError("te_general_grouped_gemm - not implemented in kunlunxin backend")
@@ -239,16 +211,7 @@ class KunLunXinBackend(TEFLBackendBase):
         sm_margin: int,
         zero_centered_gamma: bool,
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor], torch.Tensor]:
-        return rmsnorm_fwd_torch(
-            input=input,
-            weight=weight,
-            eps=eps,
-            ln_out=ln_out,
-            quantizer=quantizer,
-            odtype=otype,
-            sm_margin=sm_margin,
-            zero_centered_gamma=zero_centered_gamma,
-        )
+        raise NotImplementedError("rmsnorm_fwd - not implemented in kunlunxin backend")
 
     def rmsnorm_bwd(
         self,
@@ -260,15 +223,7 @@ class KunLunXinBackend(TEFLBackendBase):
         zero_centered_gamma: bool = False,
         eps: float = 1e-5,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        return rmsnorm_bwd_torch(
-            dy=dy,
-            x=x,
-            rsigma=rsigma,
-            gamma=gamma,
-            sm_margin=sm_margin,
-            zero_centered_gamma=zero_centered_gamma,
-            eps=eps,
-        )
+        raise NotImplementedError("rmsnorm_bwd - not implemented in kunlunxin backend")
 
     def rmsnorm_bwd_add(self, *args, **kwargs) -> Any:
         raise NotImplementedError("rmsnorm_bwd_add - not implemented in kunlunxin backend")
